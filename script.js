@@ -1,39 +1,66 @@
-// script.js
-
+// Dark Mode Toggle
 const darkModeCheckbox = document.getElementById('dark-mode-checkbox');
 const body = document.body;
 
-if (localStorage.getItem('dark-mode') === 'enabled') {
-    body.classList.add('dark-mode');
-    darkModeCheckbox.checked = true;
-}
-
-darkModeCheckbox.addEventListener('change', () => {
+if (darkModeCheckbox) {
+  darkModeCheckbox.addEventListener('change', () => {
     body.classList.toggle('dark-mode');
     if (body.classList.contains('dark-mode')) {
-        localStorage.setItem('dark-mode', 'enabled');
+      localStorage.setItem('dark-mode', 'enabled');
     } else {
-        localStorage.setItem('dark-mode', 'disabled');
+      localStorage.setItem('dark-mode', 'disabled');
     }
-});
+  });
 
+  if (localStorage.getItem('dark-mode') === 'enabled') {
+    body.classList.add('dark-mode');
+    darkModeCheckbox.checked = true;
+  }
+}
+
+// Gallery Functionality
 const galleryGrid = document.getElementById('gallery-grid');
 const showMoreBtn = document.getElementById('showMoreBtn');
 const showLessBtn = document.getElementById('showLessBtn');
-const hiddenImages = galleryGrid.querySelectorAll('.gallery-item img.hidden');
 
-showMoreBtn.addEventListener('click', () => {
+if (galleryGrid && showMoreBtn && showLessBtn) {
+  const hiddenImages = galleryGrid.querySelectorAll('.gallery-item img.hidden');
+
+  showMoreBtn.addEventListener('click', () => {
     hiddenImages.forEach(img => img.parentElement.style.display = 'block');
     showMoreBtn.style.display = 'none';
-    showLessBtn.style.display = 'inline-block';
-});
+    showLessBtn.style.display = 'block';
+  });
 
-showLessBtn.addEventListener('click', () => {
+  showLessBtn.addEventListener('click', () => {
     hiddenImages.forEach(img => img.parentElement.style.display = 'none');
     showLessBtn.style.display = 'none';
     showMoreBtn.style.display = 'inline-block';
-});
+  });
 
+  // Additional Show Less Logic
+  showLessBtn.addEventListener('click', () => {
+    const galleryItems = galleryGrid.querySelectorAll('.gallery-item');
+    galleryItems.forEach((item, index) => {
+      if (index > 1) {
+        item.style.display = 'none';
+      }
+    });
+    showLessBtn.style.display = 'none';
+    showMoreBtn.style.display = 'inline-block';
+  });
+
+  showMoreBtn.addEventListener('click', () => {
+    const galleryItems = galleryGrid.querySelectorAll('.gallery-item');
+    galleryItems.forEach((item) => {
+      item.style.display = 'block';
+    });
+    showMoreBtn.style.display = 'none';
+    showLessBtn.style.display = 'inline-block';
+  });
+}
+
+// Lightbox Modal
 const modal = document.getElementById("lightbox-modal");
 const modalImage = document.getElementById("modal-image");
 const closeModal = document.getElementById("close-modal");
@@ -56,62 +83,88 @@ const galleryData = [
 ];
 
 function openModal(index) {
-    currentImageIndex = index;
-    modalImage.src = galleryData[index].src;
-    modal.style.display = "flex";
+  currentImageIndex = index;
+  if (modalImage) modalImage.src = galleryData[index].src;
+  if (modal) modal.style.display = "flex";
 }
 
 function closeModalFunc() {
-    modal.style.display = "none";
+  if (modal) modal.style.display = "none";
 }
 
 function navigate(direction) {
-    currentImageIndex = (currentImageIndex + direction + galleryData.length) % galleryData.length;
-    modalImage.src = galleryData[currentImageIndex].src;
+  currentImageIndex = (currentImageIndex + direction + galleryData.length) % galleryData.length;
+  if (modalImage) modalImage.src = galleryData[currentImageIndex].src;
 }
 
-galleryGrid.addEventListener("click", (e) => {
+if (galleryGrid) {
+  galleryGrid.addEventListener("click", (e) => {
     const item = e.target.closest(".gallery-item");
     if (item) {
-        const index = Array.from(galleryGrid.children).indexOf(item);
-        openModal(index);
+      const index = Array.from(galleryGrid.children).indexOf(item);
+      openModal(index);
     }
-});
+  });
+}
 
-closeModal.addEventListener("click", closeModalFunc);
-prevBtn.addEventListener("click", () => navigate(-1));
-nextBtn.addEventListener("click", () => navigate(1));
+if (closeModal) closeModal.addEventListener("click", closeModalFunc);
+if (prevBtn) prevBtn.addEventListener("click", () => navigate(-1));
+if (nextBtn) nextBtn.addEventListener("click", () => navigate(1));
 
 window.addEventListener("click", (e) => {
-    if (e.target === modal) {
-        closeModalFunc();
+  if (e.target === modal) {
+    closeModalFunc();
+  }
+});
+
+// Auth Toggle Logic
+document.addEventListener('DOMContentLoaded', function() {
+  const authCard = document.getElementById('authCard');
+  if (authCard) {
+    authCard.addEventListener('transitionend', function() {
+      const isFlipped = authCard.classList.contains('flipped');
+      authCard.querySelectorAll('input').forEach(input => {
+        input.disabled = isFlipped ? (input.closest('.auth-front') !== null) : (input.closest('.auth-back') !== null);
+      });
+    });
+
+    const loginForm = document.getElementById('loginForm');
+    if (loginForm) {
+      loginForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const email = document.getElementById('login-email').value;
+        const password = document.getElementById('login-password').value;
+        console.log('Login attempt:', { email, password });
+        alert('Login functionality to be implemented!');
+      });
     }
+
+    const signupForm = document.getElementById('signupForm');
+    if (signupForm) {
+      signupForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const email = document.getElementById('signup-email').value;
+        const password = document.getElementById('signup-password').value;
+        const confirmPassword = document.getElementById('confirm-password').value;
+        if (password === confirmPassword) {
+          console.log('Signup attempt:', { email, password });
+          alert('Signup functionality to be implemented!');
+        } else {
+          alert('Passwords do not match!');
+        }
+      });
+    }
+  }
 });
 
-showLessBtn.addEventListener('click', () => {
-  const galleryGrid = document.getElementById('gallery-grid');
-  const galleryItems = galleryGrid.querySelectorAll('.gallery-item');
-
-  // Hide all gallery-items except the first two
-  galleryItems.forEach((item, index) => {
-      if (index > 1) { // Hide items after the first two
-          item.style.display = 'none';
-      }
-  });
-
-  showLessBtn.style.display = 'none';
-  showMoreBtn.style.display = 'inline-block';
-});
-
-showMoreBtn.addEventListener('click', () => {
-  const galleryGrid = document.getElementById('gallery-grid');
-  const galleryItems = galleryGrid.querySelectorAll('.gallery-item');
-
-  // Show all gallery items
-  galleryItems.forEach((item) => {
-      item.style.display = 'block';
-  });
-
-  showMoreBtn.style.display = 'none';
-  showLessBtn.style.display = 'inline-block';
-});
+function flipCard() {
+    console.log("flipCard function called"); // Debug log
+    const card = document.getElementById('authCard');
+    if (card) {
+      console.log("Card found, toggling flipped class"); // Debug log
+      card.classList.toggle('flipped');
+      console.log("Current classList:", card.classList); // Debug log
+    } else {
+      console.error("authCard element not found"); // Debug log
+    }
+  }

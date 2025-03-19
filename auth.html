@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Authentication - MyWebsite</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="logo">MyWebsite</div>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="gallery.html">Gallery</a></li>
+      <li><a href="auth.html"><i class="fas fa-sign-in-alt"></i> Sign In / Sign Up</a></li>
+    </ul>
+    <div class="dark-mode-toggle">
+      <input type="checkbox" class="checkbox" id="dark-mode-checkbox" />
+      <label class="label" for="dark-mode-checkbox">
+        <i class="fas fa-moon"></i>
+        <i class="fas fa-sun"></i>
+        <div class="ball"></div>
+      </label>
+    </div>
+  </nav>
+
+  <main class="auth-container">
+    <div class="auth-flipper">
+      <div class="auth-card" id="authCard">
+        <!-- Front Face (Login) -->
+        <div class="auth-face auth-front">
+          <div class="auth-box">
+            <h1>Log In</h1>
+            <form id="loginForm">
+              <label for="login-email">Email:</label>
+              <input type="email" id="login-email" name="email" required placeholder="Enter your email">
+              <label for="login-password">Password:</label>
+              <input type="password" id="login-password" name="password" required placeholder="Enter your password">
+              <button type="submit">Log In</button>
+            </form>
+            <div class="toggle-text">
+              Don't have an account? <span onclick="flipCard()">Sign Up</span>
+            </div>
+          </div>
+        </div>
+        <!-- Back Face (Signup) -->
+        <div class="auth-face auth-back">
+          <div class="auth-box">
+            <h1>Sign Up</h1>
+            <form id="signupForm">
+              <label for="signup-email">Email:</label>
+              <input type="email" id="signup-email" name="email" required placeholder="Enter your email">
+              <label for="signup-password">Password:</label>
+              <input type="password" id="signup-password" name="password" required placeholder="Enter your password">
+              
+              <button type="submit">Sign Up</button>
+            </form>
+            <div class="toggle-text">
+              Already have an account? <span onclick="flipCard()">Log In</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
