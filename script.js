@@ -1,20 +1,29 @@
-// Dark Mode Toggle
-const darkModeCheckbox = document.getElementById('dark-mode-checkbox');
-const body = document.body;
+let mockUsers = JSON.parse(localStorage.getItem('mockUsers')) || [
+  { name: 'rabbit', email: 'rabbit@rabbit.com', password: 'password123' },
+  { name: 'bikesh', email: 'bikesh@bikesh.com', password: 'password456' }
+];
 
-if (darkModeCheckbox) {
+// Store mockUsers in localStorage if it doesn't exist
+if (!localStorage.getItem('mockUsers')) {
+  localStorage.setItem('mockUsers', JSON.stringify(mockUsers));
+}
+// Dark Mode Toggle
+const darkModeCheckbox = document.getElementById('dark-mode-checkbox');//on the webpage that has the name
+const body = document.body;//art where all the colors and stuff show up.
+
+if (darkModeCheckbox) {//This checks if we actually found the checkbox
   darkModeCheckbox.addEventListener('change', () => {
-    body.classList.toggle('dark-mode');
-    if (body.classList.contains('dark-mode')) {
+    body.classList.toggle('dark-mode');//This flips the webpage’s look
+    if (body.classList.contains('dark-mode')) {//This checks if the webpage has the "dark-mode"
       localStorage.setItem('dark-mode', 'enabled');
-    } else {
+    } else {//: If the page isn’t dark
       localStorage.setItem('dark-mode', 'disabled');
     }
   });
 
-  if (localStorage.getItem('dark-mode') === 'enabled') {
+  if (localStorage.getItem('dark-mode') === 'enabled') {//dark mode is on," do the next stuff.
     body.classList.add('dark-mode');
-    darkModeCheckbox.checked = true;
+    darkModeCheckbox.checked = true;//the checkbox is ticked (on) to match the dark mode
   }
 }
 
@@ -118,10 +127,10 @@ window.addEventListener("click", (e) => {
 });
 
 // Auth Toggle Logic
-document.addEventListener('DOMContentLoaded', function() {
+/*document.addEventListener('DOMContentLoaded', function() {
   const authCard = document.getElementById('authCard');
-  if (authCard) {
-    authCard.addEventListener('transitionend', function() {
+  if (authCard) {//Checks if we found the card
+    authCard.addEventListener('transitionend', function() {//the card finishes flipping
       const isFlipped = authCard.classList.contains('flipped');
       authCard.querySelectorAll('input').forEach(input => {
         input.disabled = isFlipped ? (input.closest('.auth-front') !== null) : (input.closest('.auth-back') !== null);
@@ -155,16 +164,174 @@ document.addEventListener('DOMContentLoaded', function() {
       });
     }
   }
+});*/
+
+document.addEventListener('DOMContentLoaded', function() {
+  const authCard = document.getElementById('authCard');
+  if (authCard) {
+      authCard.addEventListener('transitionend', function() {
+          const isFlipped = authCard.classList.contains('flipped');
+          authCard.querySelectorAll('input').forEach(input => {
+              input.disabled = isFlipped ? (input.closest('.auth-front') !== null) : (input.closest('.auth-back') !== null);
+          });
+      });
+
+      const loginForm = document.getElementById('loginForm');
+      if (loginForm) {
+          loginForm.addEventListener('submit', function(e) {
+              e.preventDefault();
+              const email = document.getElementById('login-email').value;
+              const password = document.getElementById('login-password').value;
+              
+              // Check if user exists and password matches
+              const user = mockUsers.find(u => u.email === email && u.password === password);
+              
+              if (user) {
+                  localStorage.setItem('loggedInUser', JSON.stringify(user));
+                  alert('Login successful!');
+                  window.location.href = 'gallery.html'; // Redirect to Gallery
+              } else {
+                  alert('Invalid email or password');
+              }
+          });
+      }
+
+      const signupForm = document.getElementById('signupForm');
+      if (signupForm) {
+          signupForm.addEventListener('submit', function(e) {
+              e.preventDefault();
+              const email = document.getElementById('signup-email').value;
+              const password = document.getElementById('signup-password').value;
+
+              // Check if email already exists
+              if (mockUsers.some(u => u.email === email)) {
+                  alert('Email already registered.');
+                  return;
+              }
+
+              // Add new user
+              const newUser = { name: email.split('@')[0], email, password };
+              mockUsers.push(newUser);
+              localStorage.setItem('mockUsers', JSON.stringify(mockUsers));
+              localStorage.setItem('loggedInUser', JSON.stringify(newUser));
+              alert('Signup successful!');
+              window.location.href = 'gallery.html'; // Redirect to Gallery
+          });
+      }
+  }
+
+  // Check for logged-in user on Gallery page
+  if (window.location.pathname.includes('gallery.html')) {
+      const loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
+      if (loggedInUser) {
+          const gallerySection = document.querySelector('.gallery');
+          if (gallerySection) {
+              const welcomeMessage = document.createElement('p');
+              welcomeMessage.textContent = `Hello, ${loggedInUser.name}!`;
+              welcomeMessage.style.cssText = 'color: #3498db; font-size: 1.5rem; margin-bottom: 2rem;';
+              gallerySection.insertBefore(welcomeMessage, gallerySection.querySelector('h1'));
+          }
+      }
+  }
 });
 
 function flipCard() {
-    console.log("flipCard function called"); // Debug log
+    console.log("flipCard function called");
     const card = document.getElementById('authCard');
     if (card) {
-      console.log("Card found, toggling flipped class"); // Debug log
+      console.log("Card found, toggling flipped class"); 
       card.classList.toggle('flipped');
-      console.log("Current classList:", card.classList); // Debug log
+      console.log("Current classList:", card.classList); 
     } else {
-      console.error("authCard element not found"); // Debug log
+      console.error("authCard element not found"); 
     }
   }
+
+
+  // 3D Carousel Functionality
+const carousel3d = document.getElementById('carousel3d');
+if (carousel3d) {
+    const slides = document.querySelectorAll('.carousel-3d-slide');
+    const totalSlides = slides.length;
+    let currentIndex = 0;
+    let isDragging = false;
+    let startX = 0;
+    let currentTranslate = 0;
+    let prevTranslate = 0;
+
+    function updateCarousel() {
+        const angle = 360 / totalSlides;
+        slides.forEach((slide, index) => {
+            const slideAngle = (index - currentIndex) * angle;
+            slide.style.transform = `
+                rotateY(${slideAngle}deg)
+                translateZ(400px)
+                scale(${Math.abs(slideAngle) < 90 ? 1 : 0.8})
+            `;
+            slide.style.opacity = Math.abs(slideAngle) < 90 ? 1 : 0.5;
+            slide.style.zIndex = Math.abs(slideAngle) < 90 ? 1 : 0;
+        });
+    }
+
+    // Drag Functionality
+    carousel3d.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        startX = e.clientX;
+        prevTranslate = currentTranslate;
+        carousel3d.style.cursor = 'grabbing';
+    });
+
+    carousel3d.addEventListener('mousemove', (e) => {
+        if (isDragging) {
+            const diffX = e.clientX - startX;
+            currentTranslate = prevTranslate + diffX;
+            currentIndex = Math.round(currentTranslate / 100) % totalSlides;
+            if (currentIndex < 0) currentIndex += totalSlides;
+            updateCarousel();
+        }
+    });
+
+    carousel3d.addEventListener('mouseup', () => {
+        isDragging = false;
+        carousel3d.style.cursor = 'grab';
+    });
+
+    carousel3d.addEventListener('mouseleave', () => {
+        isDragging = false;
+        carousel3d.style.cursor = 'grab';
+    });
+
+    // Wheel Functionality
+    carousel3d.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        currentIndex += e.deltaY > 0 ? 1 : -1;
+        if (currentIndex < 0) currentIndex = totalSlides - 1;
+        if (currentIndex >= totalSlides) currentIndex = 0;
+        currentTranslate = currentIndex * 100;
+        updateCarousel();
+    });
+
+    // Touch Support for Mobile
+    carousel3d.addEventListener('touchstart', (e) => {
+        isDragging = true;
+        startX = e.touches[0].clientX;
+        prevTranslate = currentTranslate;
+    });
+
+    carousel3d.addEventListener('touchmove', (e) => {
+        if (isDragging) {
+            const diffX = e.touches[0].clientX - startX;
+            currentTranslate = prevTranslate + diffX;
+            currentIndex = Math.round(currentTranslate / 100) % totalSlides;
+            if (currentIndex < 0) currentIndex += totalSlides;
+            updateCarousel();
+        }
+    });
+
+    carousel3d.addEventListener('touchend', () => {
+        isDragging = false;
+    });
+
+    // Initial Setup
+    updateCarousel();
+}
